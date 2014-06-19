@@ -14,6 +14,8 @@ red="$(tput setaf 1)"
 yellow="$(tput bold ; tput setaf 3)"
 NC="$(tput sgr0)"
 
+mkdir -p /opt
+
 # Capture your FQDN Domain Name and IP Address
 echo "${yellow}Capturing your hostname${NC}"
 yourhostname=$(hostname)
@@ -34,7 +36,7 @@ sed -i -e 's|deb cdrom:|# deb cdrom:|' /etc/apt/sources.list
 apt-get -qq update
 
 # Install Pre-Reqs
-apt-get install -y --force-yes openjdk-7-jre-headless ruby ruby1.9.1-dev libcurl4-openssl-dev git nginx curl
+apt-get install -y --force-yes openjdk-7-jre-headless ruby ruby1.9.1-dev libcurl4-openssl-dev git nginx curl collectd
 
 # Install Redis-Server
 apt-get -y install redis-server
@@ -43,29 +45,29 @@ sed -i -e 's|bind 127.0.0.1|bind 0.0.0.0|' /etc/redis/redis.conf
 service redis-server restart
 
 # Install Elasticsearch
-cd /opt
-#wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.11.deb
-#dpkg -i elasticsearch-0.90.11.deb
-wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
-dpkg -i elasticsearch-1.1.1.deb
+
+wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+echo "deb http://packages.elasticsearch.org/elasticsearch/1.2/debian stable main" > /etc/apt/sources.list.d/elasticsearch-stable.list
+apt-get update
+apt-get -y install elasticsearch
 
 # Configuring Elasticsearch
-echo "cluster.name: logstash-cluster" >> /etc/elasticsearch/elasticsearch.yml
-echo "node.name: $yourhostname" >> /etc/elasticsearch/elasticsearch.yml
-echo "discovery.zen.ping.multicast.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
-echo "discovery.zen.ping.unicast.hosts: ["127.0.0.1:[9300-9400]"]" >> /etc/elasticsearch/elasticsearch.yml
-echo "node.master: true" >> /etc/elasticsearch/elasticsearch.yml
-echo "node.data: true" >> /etc/elasticsearch/elasticsearch.yml
-echo "index.number_of_shards: 1" >> /etc/elasticsearch/elasticsearch.yml
-echo "index.number_of_replicas: 0" >> /etc/elasticsearch/elasticsearch.yml
-echo "bootstrap.mlockall: true" >> /etc/elasticsearch/elasticsearch.yml
+# echo "cluster.name: logstash-cluster" >> /etc/elasticsearch/elasticsearch.yml
+# echo "node.name: $yourhostname" >> /etc/elasticsearch/elasticsearch.yml
+# echo "discovery.zen.ping.multicast.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
+# echo "discovery.zen.ping.unicast.hosts: ["127.0.0.1:[9300-9400]"]" >> /etc/elasticsearch/elasticsearch.yml
+# echo "node.master: true" >> /etc/elasticsearch/elasticsearch.yml
+# echo "node.data: true" >> /etc/elasticsearch/elasticsearch.yml
+# echo "index.number_of_shards: 1" >> /etc/elasticsearch/elasticsearch.yml
+# echo "index.number_of_replicas: 0" >> /etc/elasticsearch/elasticsearch.yml
+# echo "bootstrap.mlockall: true" >> /etc/elasticsearch/elasticsearch.yml
 
 # Making changes to /etc/security/limits.conf to allow more open files for elasticsearch
-mv /etc/security/limits.conf /etc/security/limits.bak
-grep -Ev "# End of file" /etc/security/limits.bak > /etc/security/limits.conf
-echo "elasticsearch soft nofile 32000" >> /etc/security/limits.conf
-echo "elasticsearch hard nofile 32000" >> /etc/security/limits.conf
-echo "# End of file" >> /etc/security/limits.conf
+# mv /etc/security/limits.conf /etc/security/limits.bak
+# grep -Ev "# End of file" /etc/security/limits.bak > /etc/security/limits.conf
+# echo "elasticsearch soft nofile 32000" >> /etc/security/limits.conf
+# echo "elasticsearch hard nofile 32000" >> /etc/security/limits.conf
+# echo "# End of file" >> /etc/security/limits.conf
 
 # Set Elasticsearch to start on boot
 sudo update-rc.d elasticsearch defaults 95 10
@@ -188,6 +190,7 @@ echo "You entered ${red}$pfsensehostname${NC}"
 # Create Logstash configuration file
 mkdir /etc/logstash
 tee -a /etc/logstash/logstash.conf <<EOF
+
 input {
         file {
                 path => "/var/log/nginx/access.log"
@@ -258,6 +261,9 @@ input {
                 port => "3525"
                 codec => "json_lines"
         }
+}
+input {
+	collectd { }
 }
 filter {
         if [type] == "syslog" {
