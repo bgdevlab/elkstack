@@ -140,8 +140,8 @@ rm kibana-*.tar.gz
 mv kibana-* kibana
 
 # Making the logstash dashboard the default
-mv /usr/share/nginx/html/kibana/app/dashboards/default.json /usr/share/nginx/html/kibana/app/dashboards/default.json.orig
-mv /usr/share/nginx/html/kibana/app/dashboards/logstash.json /usr/share/nginx/html/kibana/app/dashboards/default.json
+# mv /usr/share/nginx/html/kibana/app/dashboards/default.json /usr/share/nginx/html/kibana/app/dashboards/default.json.orig
+# cp /usr/share/nginx/html/kibana/app/dashboards/logstash.json /usr/share/nginx/html/kibana/app/dashboards/default.json
 
 cd /usr/share/nginx/html/kibana/app/dashboards
 curl -O https://gist.githubusercontent.com/untergeek/0df04cd4c3b31cebeadf/raw/a157bcda377cde431766cf691be458ead8dbb826/kibana.json
