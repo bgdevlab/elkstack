@@ -136,6 +136,7 @@ service logstash restart
 cd /etc/collectd
 mv collectd.conf collectd.conf.old || true
 curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/conf/collectd.conf
+/etc/init.d/collectd restart
 
 # Install and configure Kibana3 frontend
 cd /usr/share/nginx/html
@@ -150,8 +151,7 @@ mv /usr/share/nginx/html/kibana/app/dashboards/default.json /usr/share/nginx/htm
 mv /usr/share/nginx/html/kibana/app/dashboards/logstash.json /usr/share/nginx/html/kibana/app/dashboards/default.json
 
 cd /usr/share/nginx/html/kibana/app/dashboards
-curl -O https://gist.githubusercontent.com/untergeek/0df04cd4c3b31cebeadf/raw/a157bcda377cde431766cf691be458ead8dbb826/kibana.json
-mv kibana.json collectd.json
+curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/dashboards/collectd.json
 
 # Install elasticsearch curator http://www.elasticsearch.org/blog/curator-tending-your-time-series-indices/
 apt-get -y install python-pip
