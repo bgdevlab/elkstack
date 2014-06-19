@@ -132,11 +132,16 @@ EOF
 # Restart logstash service
 service logstash restart
 
+# Configure collectd
+cd /etc/collectd
+mv collectd.conf collectd.conf.old || true
+curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/conf/collectd.conf
+
 # Install and configure Kibana3 frontend
 cd /usr/share/nginx/html
 rm -rf kibana
 wget https://download.elasticsearch.org/kibana/kibana/kibana-3.0.1.tar.gz
-tar zxvf kibana-*
+tar zxvf kibana-3.0.1.tar.gz
 rm kibana-*.tar.gz
 mv kibana-* kibana
 
