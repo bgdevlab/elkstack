@@ -79,17 +79,17 @@ service elasticsearch restart
 
 # Install ElasticHQ Plugin to view Elasticsearch Cluster Details http://elastichq.org
 # To view these stats connect to http://logstashFQDNorIP:9200/_plugin/HQ/
-/usr/share/elasticsearch/bin/plugin -install royrusso/elasticsearch-HQ
+/usr/share/elasticsearch/bin/plugin -install royrusso/elasticsearch-HQ || true
 
 # Install elasticsearch Marvel Plugin Details http://www.elasticsearch.org/overview/marvel/
 # To view these stats connect to http://logstashFQDNorIP:9200/_plugin/marvel
-/usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest
+/usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest || true
 
 # Install other elasticsearch plugins
 # To view paramedic connect to http://logstashFQDNorIP:9200/_plugin/paramedic/index.html
-/usr/share/elasticsearch/bin/plugin -install karmi/elasticsearch-paramedic
+/usr/share/elasticsearch/bin/plugin -install karmi/elasticsearch-paramedic || true
 # To view elasticsearch head connect to http://logstashFQDNorIP:9200/_plugin/head/index.html
-/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
+/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head || true
 
 # Install Logstash
 cd /opt
