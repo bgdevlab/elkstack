@@ -4,11 +4,9 @@ Logstash and Kibana3 Auto Install script
 This script is for doing an automated install of logstash and the kibana3 front end. It will also setup some tagging and cleanup for VMware ESXi hosts.
 
 Install instructions.
-
-bash <(curl -s https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/install_logstash_1.4_kibana_ubuntu.sh)
-
-and done.
-
+```
+curl -sL http://bit.ly/elk-me | bash
+```
 
 Setup syslog for devices as follows.
 Port List
