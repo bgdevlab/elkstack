@@ -1,7 +1,9 @@
-Logstash and Kibana3 Auto Install script
+ELK-ME
 ----------------------------------------
 
-This script is for doing an automated install of logstash and the kibana3 front end. It will also setup some tagging and cleanup for VMware ESXi hosts.
+This script is for doing an automated install of elasticsearch, logstash and the kibana3 front end.
+The logstash filters are designed to process logs from OpenStack clusters.
+They will also consume collectd stats, and snmp via collectd.
 
 Install instructions.
 ```
@@ -12,7 +14,26 @@ Setup syslog for devices as follows.
 Port List
 TCP/514 Syslog (Devices supporting TCP)
 UDP/514 Syslog (Devices that do not support TCP - Only use if absolutely necessary)
-TCP/1514 VMware ESXi
-TCP/1515 VMware vCenter (Windows install or appliance) (For Windows install use NXLog from below in device setup) (For appliance reference device setup below)
-TCP/3515 Windows Eventlog (Use NXLog from below in device setup)
-TCP/3525 Windows IIS Logs (Use NXLog from below in device setup)
+TCP/5043 Logstash-Forwarder
+
+
+DASHBOARD COLLECTIONS:
+
+https://gist.github.com/mrlesmithjr/8f8ff8e2e8e6f43cb701 - Vmware
+https://gist.github.com/mrlesmithjr/b0c8f9d8495c8dbefba7 - Syslog
+https://gist.github.com/mrlesmithjr/42db96d077f4d1035186 - Windows
+
+
+http://everythingshouldbevirtual.com/highly-available-elk-elasticsearch-logstash-kibana-setup
+
+TODO (JMC): Submit openstack patch to https://github.com/elasticsearch/logstash/tree/v1.4.1/patterns
+TODO (JMC): Chain filters like so: https://groups.google.com/forum/#!topic/logstash-users/x0i-G0qiU6M
+
+Elasticsearch query syntax is at http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax
+
+Polling SNMP via collectd is useful.
+But it often requires a UDP-over-SSH proxy.
+Use this:
+
+https://github.com/brianmay/sshuttle/tree/tproxy/src
+https://groups.google.com/forum/#!msg/sshuttle/YxjLH0Fwstk/wBoYXfQVyxAJ
