@@ -20,67 +20,33 @@
           "type": "lucene",
           "enable": true,
           "query": "program:nova-"
-        }
-      },
-      "ids": [
-        0,
-        1
-      ]
-    },
-    "filter": {
-      "list": {
-        "0": {
-          "type": "time",
-          "field": "@timestamp",
-          "from": "now-6h",
-          "to": "now",
-          "mandate": "must",
-          "active": true,
-          "alias": "",
-          "id": 0
-        },
-        "1": {
-          "type": "field",
-          "field": "tags",
-          "query": "(\"debug\")",
-          "mandate": "mustNot",
-          "active": true,
-          "alias": "",
-          "id": 1
         },
         "2": {
-          "type": "field",
-          "field": "program",
-          "query": "\"dhcpd\"",
-          "mandate": "mustNot",
-          "active": true,
+          "id": 2,
+          "color": "#6ED0E0",
           "alias": "",
-          "id": 2
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "plugin:snmp"
         },
         "3": {
-          "type": "querystring",
-          "query": "optimal -> optimal",
-          "mandate": "mustNot",
-          "active": true,
+          "id": 3,
+          "color": "#EF843C",
           "alias": "",
-          "id": 3
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "NOT type:meters"
         },
         "4": {
-          "type": "querystring",
-          "query": "message:DEBUG or message:AUDIT or message:INFO",
-          "mandate": "mustNot",
-          "active": true,
+          "id": 4,
+          "color": "#E24D42",
           "alias": "",
-          "id": 4
-        },
-        "5": {
-          "type": "field",
-          "field": "program",
-          "query": "\"in.tftpd\"",
-          "mandate": "mustNot",
-          "active": true,
-          "alias": "",
-          "id": 5
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "plugin:snmp AND type_instance:_mnt_osd*"
         }
       },
       "ids": [
@@ -88,12 +54,104 @@
         1,
         2,
         3,
-        4,
-        5
+        4
+      ]
+    },
+    "filter": {
+      "list": {
+        "0": {
+          "type": "time",
+          "field": "@timestamp",
+          "from": "now-5m",
+          "to": "now",
+          "mandate": "must",
+          "active": true,
+          "alias": "",
+          "id": 0
+        }
+      },
+      "ids": [
+        0
       ]
     }
   },
   "rows": [
+    {
+      "title": "Disk usage",
+      "height": "150px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 4,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "host_dev_instance",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 10,
+          "order": "min",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "vertical",
+          "chart": "bar",
+          "counter_pos": "below",
+          "spyable": true,
+          "queries": {
+            "mode": "selected",
+            "ids": [
+              2
+            ]
+          },
+          "tmode": "terms_stats",
+          "tstat": "min",
+          "valuefield": "percent_free",
+          "title": "%-Free System Disks"
+        },
+        {
+          "error": false,
+          "span": 4,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "host_dev_instance",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 10,
+          "order": "min",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "vertical",
+          "chart": "bar",
+          "counter_pos": "below",
+          "spyable": true,
+          "queries": {
+            "mode": "selected",
+            "ids": [
+              4
+            ]
+          },
+          "tmode": "terms_stats",
+          "tstat": "min",
+          "valuefield": "percent_free",
+          "title": "%-Free OSD Disks"
+        }
+      ],
+      "notice": false
+    },
     {
       "title": "Grandpa",
       "height": "300px",
@@ -116,8 +174,6 @@
           ],
           "overflow": "height",
           "fields": [
-            "timestamp",
-            "host",
             "logmessage"
           ],
           "highlight": [],
@@ -206,7 +262,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "5m",
+          "interval": "1s",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -225,7 +281,10 @@
             "mode": "all",
             "ids": [
               0,
-              1
+              1,
+              2,
+              3,
+              4
             ]
           },
           "title": "Events over time",
@@ -282,7 +341,7 @@
       "collapsable": true,
       "panels": [
         {
-          "title": "All events",
+          "title": "Non-meter events",
           "error": false,
           "span": 12,
           "editable": true,
@@ -313,14 +372,17 @@
             "mode": "all",
             "ids": [
               0,
-              1
+              1,
+              2,
+              3,
+              4
             ]
           },
           "field_list": true,
           "status": "Stable",
           "trimFactor": 300,
           "normTimes": true,
-          "all_fields": false
+          "all_fields": true
         }
       ],
       "notice": false
@@ -339,29 +401,29 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": false,
+      "collapse": true,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
+        "plugin:snmp AND type_instance:_mnt_osd*",
+        "NOT type:meters",
+        "plugin:snmp",
         "program:nova-",
         "ipmi",
-        "program:nova- AND NOT (message:DEBUG or message:AUDIT or message:INFO)",
-        "program:nova- AND NOT (message:DEBUG or message:AUDIT)",
-        "program:nova- AND NOT message:DEBUG",
-        "NOT program:nova-",
-        "*",
-        "",
-        "grandpa",
-        "dhcp"
+        "plugin:snmp AND type_instance:(osd)",
+        "plugin:snmp AND host_dev_instance:(osd)",
+        "plugin:snmp AND host_dev_instance:\"*osd*\"",
+        "plugin:snmp AND host_dev_instance:\"osd*\"",
+        "plugin:snmp AND type_instance:osd"
       ],
       "remember": 10,
       "enable": true
     },
     {
       "type": "filtering",
-      "collapse": false,
-      "notice": true,
+      "collapse": true,
+      "notice": false,
       "enable": true
     }
   ],

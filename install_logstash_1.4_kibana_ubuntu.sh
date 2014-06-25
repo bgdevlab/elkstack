@@ -38,7 +38,7 @@ sed -i -e 's|deb cdrom:|# deb cdrom:|' /etc/apt/sources.list
 apt-get -qq update
 
 # Install Pre-Reqs
-apt-get install -y --force-yes openjdk-7-jre-headless ruby ruby1.9.1-dev libcurl4-openssl-dev git nginx curl collectd
+apt-get install -y --force-yes openjdk-7-jre-headless ruby ruby1.9.1-dev libcurl4-openssl-dev git nginx curl collectd screen
 
 # Install Redis-Server
 apt-get -y install redis-server
@@ -152,6 +152,7 @@ mv /usr/share/nginx/html/kibana/app/dashboards/logstash.json /usr/share/nginx/ht
 
 cd /usr/share/nginx/html/kibana/app/dashboards
 curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/dashboards/collectd.json
+curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/dashboards/piston.json
 
 # Install elasticsearch curator http://www.elasticsearch.org/blog/curator-tending-your-time-series-indices/
 apt-get -y install python-pip
