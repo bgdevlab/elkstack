@@ -4,4 +4,4 @@ messages
 cmessages
 PRIVATE-*
 *.pyc
-conf/**/*.conf
+**/*.conf
