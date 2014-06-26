@@ -1,0 +1,8 @@
+<Plugin snmp>
+    <Host "node-1">
+		Address "172.16.10.1"
+		Version 2
+		Community "public"
+		Collect "disk_usage" "hr_users" "std_traffic"
+	</Host>
+</Plugin>

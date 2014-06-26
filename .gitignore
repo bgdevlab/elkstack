@@ -1,0 +1,7 @@
+*.crt
+*.key
+messages
+cmessages
+PRIVATE-*
+*.pyc
+conf/**/*.conf

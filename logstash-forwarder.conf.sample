@@ -1,0 +1,18 @@
+{
+  "network": {
+    "servers": [ "elkstack.org:5043" ],
+    "ssl certificate": "./logstash-forwarder.crt",
+    "ssl key": "./logstash-forwarder.key",
+    "ssl ca": "./logstash-forwarder.crt",
+    "timeout": 25
+  },
+  "files": [
+    {
+      "paths": [ 
+        "/var/log/cmessages",
+        "/var/log/messages"
+      ],
+      "fields": { "type": "syslog" }
+    }
+  ]
+}
