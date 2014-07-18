@@ -109,10 +109,12 @@ Appendix - Using Brian May's SSHUTTLE fork for UDP-over-SSH:
 	ip -6 rule add fwmark 1 lookup 100
 	sshuttle --method=tproxy --daemon -r root@<my_openstack_host> 172.16.0.0/16
 
+Note that this seems to suffer from this bug (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=607067) which should be backported.
 
 TODO (JMC):
 -------------------------------
 
+ - Make the iptable rules changes stick. (For sshuttle).
  - Make it clustered: http://everythingshouldbevirtual.com/highly-available-elk-elasticsearch-logstash-kibana-setup
  - Submit openstack patch to https://github.com/elasticsearch/logstash/tree/v1.4.1/patterns
  - Chain filters like so: https://groups.google.com/forum/#!topic/logstash-users/x0i-G0qiU6M

@@ -8,8 +8,8 @@
 set -e
 # Setup logging
 # Logs stderr and stdout to separate files.
-exec 2> >(tee "./Logstash_Kibana3/install_logstash_kibana_ubuntu.err")
-exec > >(tee "./Logstash_Kibana3/install_logstash_kibana_ubuntu.log")
+exec 2> >(tee "./install_logstash_kibana_ubuntu.err")
+exec > >(tee "./install_logstash_kibana_ubuntu.log")
 
 # Setting colors for output
 red="$(tput setaf 1)"
@@ -53,23 +53,17 @@ echo "deb http://packages.elasticsearch.org/elasticsearch/1.2/debian stable main
 apt-get update
 apt-get -y install elasticsearch
 
-# Configuring Elasticsearch
-# echo "cluster.name: logstash-cluster" >> /etc/elasticsearch/elasticsearch.yml
-# echo "node.name: $yourhostname" >> /etc/elasticsearch/elasticsearch.yml
-# echo "discovery.zen.ping.multicast.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
-# echo "discovery.zen.ping.unicast.hosts: ["127.0.0.1:[9300-9400]"]" >> /etc/elasticsearch/elasticsearch.yml
-# echo "node.master: true" >> /etc/elasticsearch/elasticsearch.yml
-# echo "node.data: true" >> /etc/elasticsearch/elasticsearch.yml
-# echo "index.number_of_shards: 1" >> /etc/elasticsearch/elasticsearch.yml
-# echo "index.number_of_replicas: 0" >> /etc/elasticsearch/elasticsearch.yml
-# echo "bootstrap.mlockall: true" >> /etc/elasticsearch/elasticsearch.yml
+# Create Elasticsearch YML file
+cd /etc/elasticsearch
+mv elasticsearch.yml elasticsearch.yml.bak
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/conf/elasticsearch/elasticsearch.yml
 
-# Making changes to /etc/security/limits.conf to allow more open files for elasticsearch
-# mv /etc/security/limits.conf /etc/security/limits.bak
-# grep -Ev "# End of file" /etc/security/limits.bak > /etc/security/limits.conf
-# echo "elasticsearch soft nofile 32000" >> /etc/security/limits.conf
-# echo "elasticsearch hard nofile 32000" >> /etc/security/limits.conf
-# echo "# End of file" >> /etc/security/limits.conf
+#Making changes to /etc/security/limits.conf to allow more open files for elasticsearch
+mv /etc/security/limits.conf /etc/security/limits.bak
+grep -Ev "# End of file" /etc/security/limits.bak > /etc/security/limits.conf
+echo "elasticsearch soft nofile 32000" >> /etc/security/limits.conf
+echo "elasticsearch hard nofile 32000" >> /etc/security/limits.conf
+echo "# End of file" >> /etc/security/limits.conf
 
 # Set Elasticsearch to start on boot
 sudo update-rc.d elasticsearch defaults 95 10
@@ -102,7 +96,7 @@ mv logstash-1.4.1 logstash
 
 # Create Logstash Init Script
 cd /etc/init.d
-curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/init.d/logstash
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/init.d/logstash
 
 # Make logstash executable
 chmod +x /etc/init.d/logstash
@@ -113,12 +107,13 @@ update-rc.d logstash defaults 96 04
 # Create Logstash configuration file
 mkdir -p /etc/logstash
 cd /etc/logstash
-curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/conf/logstash.conf
+# TODO(JMC): Use this from fabric instead
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/conf/logstash/logstash.conf
 
 # Update elasticsearch-template for logstash
 mv /opt/logstash/lib/logstash/outputs/elasticsearch/elasticsearch-template.json /opt/logstash/lib/logstash/outputs/elasticsearch/elasticsearch-template.json.orig
 cd /opt/logstash/lib/logstash/outputs/elasticsearch/
-curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/conf/elasticsearch-template.json
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/conf/elasticsearch-template.json
 
 # Create IPTables Grok pattern
 tee -a /opt/logstash/patterns/IPTABLES <<EOF
@@ -135,7 +130,7 @@ service logstash restart
 # Configure collectd
 cd /etc/collectd
 mv collectd.conf collectd.conf.old || true
-curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/conf/collectd.conf
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/conf/collectd.conf
 /etc/init.d/collectd restart
 
 # Install and configure Kibana3 frontend
@@ -151,8 +146,8 @@ mv /usr/share/nginx/html/kibana/app/dashboards/default.json /usr/share/nginx/htm
 mv /usr/share/nginx/html/kibana/app/dashboards/logstash.json /usr/share/nginx/html/kibana/app/dashboards/default.json
 
 cd /usr/share/nginx/html/kibana/app/dashboards
-curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/dashboards/collectd.json
-curl -O https://raw.githubusercontent.com/joshuamckenty/Logstash_Kibana3/master/dashboards/piston.json
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/dashboards/collectd.json
+curl -O https://raw.githubusercontent.com/joshuamckenty/elkstack/master/dashboards/piston.json
 
 # Install elasticsearch curator http://www.elasticsearch.org/blog/curator-tending-your-time-series-indices/
 apt-get -y install python-pip

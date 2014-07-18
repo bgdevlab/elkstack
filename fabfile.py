@@ -18,14 +18,15 @@ def deploy():
     deploy_collectd()
     
 
-@roles('web')
+@roles('elk')
 def deploy_logstash():
-     with cd('/etc/logstash'):
-        put('logstash-forwarder.crt', '/etc/logstash', use_sudo=True)
-        put('logstash-forwarder.key', '/etc/logstash', use_sudo=True)
-        run('chown root:root logstash-forwarder.*', use_sudo=True)
-        put('conf/logstash.conf', '/etc/logstash', use_sudo=True)
-        run('/etc/init.d/logstash restart', use_sudo=True)
+     with cd('/opt/logstash'):
+        put('logstash-forwarder.crt', '/opt/logstash', use_sudo=True)
+        put('logstash-forwarder.key', '/opt/logstash', use_sudo=True)
+        run('sudo chown root:root logstash-forwarder.*')
+        put('conf/logstash/*.conf', '/etc/logstash', use_sudo=True)
+        run('sudo chown root:root /etc/logstash/*.conf')
+        run('sudo /etc/init.d/logstash restart')
 
 @roles('collectd')
 def deploy_collectd():
